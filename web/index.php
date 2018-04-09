@@ -99,13 +99,16 @@ $app->get('/storefront/{storeHash}/customers/{jwtToken}/recently_purchased.html'
 		$recentlyPurchasedProductsHtml = getRecentlyPurchasedProductsHtml($storeHash, $customerId);
 
 		// Now respond with the generated HTML
-		$response = new Response($recentlyPurchasedProductsHtml, 200, $headers);
+		$response = new Response();
+		$response->setContent($recentlyPurchasedProductsHtml);
+		$response->headers->set('Content-Type', 'text/html');
+		$response->headers->set('Access-Control-Allow-Origin', '*');
 	} catch (Exception $e) {
 		error_log("Error occurred while trying to get recently purchased items: {$e->getMessage()}");
 		$response = new Response("", 500, $headers); // Empty string here to make sure we don't display any errors in the storefront.
 	}
 
-	return $response;
+	return $response->send();
 });
 
 /**
